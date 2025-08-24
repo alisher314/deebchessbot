@@ -90,16 +90,15 @@ prevBtn.addEventListener('click', showPrevMove);
 startBtn.addEventListener('click', showStart);
 endBtn.addEventListener('click', showEnd);
 
-// Инициализация, которая ждёт загрузки DOM и библиотек
-$(document).ready(function() {
-    // Теперь мы создаем объект Chess.js здесь, внутри этого блока
+// Инициализация доски после загрузки DOM
+document.addEventListener('DOMContentLoaded', () => {
+    // Теперь мы создаем объект Chess.js здесь
     game = new Chess();
-
     const config = {
         draggable: false,
         position: 'start',
         sparePieces: false
     };
     board = Chessboard('board', config);
-    updateBoardAndStatus(); // Обновляем доску при первой загрузке
+    updateBoardAndStatus();
 });
