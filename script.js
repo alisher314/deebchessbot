@@ -1,5 +1,5 @@
-﻿// Инициализируем объекты Chess.js и Chessboard.js
-const game = new Chess();
+// Инициализируем объекты Chess.js и Chessboard.js
+let game = null;
 let board = null;
 
 // Элементы DOM
@@ -90,8 +90,11 @@ prevBtn.addEventListener('click', showPrevMove);
 startBtn.addEventListener('click', showStart);
 endBtn.addEventListener('click', showEnd);
 
-// Инициализация доски
+// Инициализация, которая ждёт загрузки DOM и библиотек
 $(document).ready(function() {
+    // Теперь мы создаем объект Chess.js здесь, внутри этого блока
+    game = new Chess();
+
     const config = {
         draggable: false,
         position: 'start',
