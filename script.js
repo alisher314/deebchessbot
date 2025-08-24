@@ -1,3 +1,7 @@
+// Импортируем класс Chess из локального файла chess.min.js
+import { Chess } from './chess.min.js';
+
+// Объект для сопоставления FEN-нотации с юникодными символами фигур
 const PIECES = {
     'p': '♙', 'n': '♘', 'b': '♗', 'r': '♖', 'q': '♕', 'k': '♔',
     'P': '♟', 'N': '♞', 'B': '♝', 'R': '♜', 'Q': '♛', 'K': '♚'
@@ -99,7 +103,7 @@ pgnFileInput.addEventListener('change', (event) => {
                 game.loadPgn(pgnText);
                 pgnDiv.textContent = game.pgn();
                 currentMoveIndex = 0;
-                showEnd(); // Переходим в конец партии
+                showEnd();
             } catch (error) {
                 alert('Не удалось загрузить PGN. Пожалуйста, убедитесь, что файл корректен.');
                 console.error(error);
