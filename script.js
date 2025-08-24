@@ -1,6 +1,12 @@
-// Инициализируем объекты Chess.js и Chessboard.js
-let game = null;
-let board = null;
+// Объект для сопоставления FEN-нотации с юникодными символами фигур
+const PIECES = {
+    'p': '♙', 'n': '♘', 'b': '♗', 'r': '♖', 'q': '♕', 'k': '♔',
+    'P': '♟', 'N': '♞', 'B': '♝', 'R': '♜', 'Q': '♛', 'K': '♚'
+};
+
+const game = new Chess();
+let currentMoveIndex = 0;
+const boardElement = document.getElementById('board');
 
 // Элементы DOM
 const pgnFileInput = document.getElementById('pgnFile');
@@ -11,22 +17,46 @@ const endBtn = document.getElementById('endBtn');
 const statusDiv = document.getElementById('status');
 const pgnDiv = document.getElementById('pgn');
 
-// Текущий индекс хода в истории
-let currentMoveIndex = 0;
+// Функция для отрисовки доски
+function drawBoard(fen) {
+    boardElement.innerHTML = ''; // Очищаем доску
+
+    const ranks = fen.split(' ')[0].split('/');
+    for (let i = 0; i < 8; i++) {
+        let isLightSquare = (i % 2 === 0);
+        for (const char of ranks[i]) {
+            if (char >= '1' && char <= '8') {
+                const emptySquares = parseInt(char, 10);
+                for (let j = 0; j < emptySquares; j++) {
+                    const square = document.createElement('div');
+                    square.className = 'square ' + (isLightSquare ? 'white' : 'black');
+                    boardElement.appendChild(square);
+                    isLightSquare = !isLightSquare;
+                }
+            } else {
+                const piece = document.createElement('div');
+                piece.className = 'square ' + (isLightSquare ? 'white' : 'black');
+                piece.textContent = PIECES[char];
+                boardElement.appendChild(piece);
+                isLightSquare = !isLightSquare;
+            }
+        }
+    }
+}
 
 // Функция для обновления доски и статуса
 function updateBoardAndStatus() {
-    // Получаем текущую позицию из истории
     const history = game.history({ verbose: true });
+    
     let currentFen;
     if (currentMoveIndex > 0) {
         currentFen = history[currentMoveIndex - 1].after;
     } else {
         currentFen = game.initialFen();
     }
-    board.position(currentFen, false);
+    
+    drawBoard(currentFen);
 
-    // Обновляем статус
     let statusText = `Ход ${currentMoveIndex} из ${history.length}`;
     if (history.length === 0) {
         statusText = 'Партия не загружена';
@@ -67,9 +97,8 @@ pgnFileInput.addEventListener('change', (event) => {
         reader.onload = (e) => {
             const pgnText = e.target.result;
             try {
-                // Загружаем PGN в объект Chess.js
                 game.loadPgn(pgnText);
-                pgnDiv.textContent = game.pgn(); // Отображаем загруженный PGN
+                pgnDiv.textContent = game.pgn();
                 currentMoveIndex = 0;
                 showEnd(); // Переходим в конец партии
             } catch (error) {
@@ -90,15 +119,5 @@ prevBtn.addEventListener('click', showPrevMove);
 startBtn.addEventListener('click', showStart);
 endBtn.addEventListener('click', showEnd);
 
-// Инициализация доски после загрузки DOM
-document.addEventListener('DOMContentLoaded', () => {
-    // Теперь мы создаем объект Chess.js здесь
-    game = new Chess();
-    const config = {
-        draggable: false,
-        position: 'start',
-        sparePieces: false
-    };
-    board = Chessboard('board', config);
-    updateBoardAndStatus();
-});
+// Инициализация
+updateBoardAndStatus();
